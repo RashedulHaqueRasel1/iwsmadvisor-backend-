@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const linkSchema = new mongoose.Schema(
     {
-        label: { type: String, required: true, trim: true },
-        url: { type: String, required: true, trim: true },
+        label: { type: String, trim: true, default: "" },
+        url: { type: String, trim: true, default: "" },
     },
     { _id: false }
 );
