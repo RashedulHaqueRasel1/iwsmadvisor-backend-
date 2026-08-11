@@ -21,10 +21,10 @@ const parseLinkArray = (value) => {
     const normalized = parsed
         .filter(item => item && typeof item === "object")
         .map(item => ({
-            label: typeof item.label === "string" ? item.label.trim() : item.label,
-            url: typeof item.url === "string" ? item.url.trim() : item.url,
+            label: typeof item.label === "string" ? item.label.trim() : "",
+            url: typeof item.url === "string" ? item.url.trim() : "",
         }))
-        .filter(item => item.label && item.url);
+        .filter(item => item.label || item.url);
 
     return normalized.length ? normalized : [];
 };
@@ -48,17 +48,29 @@ const createFooter = catchAsync(async (req, res) => {
 
     const cloudinaryResult = await cloudinaryUpload(logoFile.path, `footer-logo-${Date.now()}`, "footer");
 
-    // ✅ No JSON.parse needed — validateRequest already parsed them
+    const normalizedQuickLinks = parseLinkArray(quickLinks);
+    const normalizedConsultingLinks = parseLinkArray(consultingLinks);
+    const normalizedContactLinks = parseLinkArray(contactLinks);
+
+    let normalizedSocialLinks = socialLinks;
+    if (typeof socialLinks === "string") {
+        try {
+            normalizedSocialLinks = JSON.parse(socialLinks);
+        } catch (error) {
+            normalizedSocialLinks = {};
+        }
+    }
+
     const created = await footerService.createFooterIntoDb({
         logo: cloudinaryResult.url,
         description,
         email,
         phone,
         copyright,
-        quickLinks: quickLinks || [],
-        consultingLinks: consultingLinks || [],
-        contactLinks: contactLinks || [],
-        socialLinks: socialLinks || {},
+        quickLinks: normalizedQuickLinks || [],
+        consultingLinks: normalizedConsultingLinks || [],
+        contactLinks: normalizedContactLinks || [],
+        socialLinks: normalizedSocialLinks || {},
     });
 
     return generateResponse(res, 201, true, "Footer created successfully", created);

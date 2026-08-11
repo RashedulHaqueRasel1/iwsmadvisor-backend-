@@ -1,23 +1,13 @@
 import Joi from "joi";
 
 const linkSchema = Joi.object({
-    label: Joi.string().trim().required().messages({
-        "any.required": "Link label is required",
-        "string.empty": "Link label cannot be empty",
-    }),
-    url: Joi.string().trim().required().messages({
-        "any.required": "Link url is required",
-        "string.empty": "Link url cannot be empty",
-    }),
+    label: Joi.string().trim().optional().allow(""),
+    url: Joi.string().trim().optional().allow(""),
 });
 
 const updateLinkSchema = Joi.object({
-    label: Joi.string().trim().optional().allow("").messages({
-        "string.empty": "Link label cannot be empty",
-    }),
-    url: Joi.string().trim().optional().allow("").messages({
-        "string.empty": "Link url cannot be empty",
-    }),
+    label: Joi.string().trim().optional().allow(""),
+    url: Joi.string().trim().optional().allow(""),
 });
 
 const createFooterSchema = Joi.object({
